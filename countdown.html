@@ -1,5 +1,7 @@
 <html>
     <head>
+        <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" crossorigin="anonymous">
+        <link rel="stylesheet" href="style.css">    
         <title>Is Stefan Ready for Fun?</title>
 
         <script>
@@ -76,10 +78,10 @@
                 const excuses = ["Still no", "Possibly (but not actually)", "Maybe", "Brazil isn't done", "Not this time","The email is about to come out!", "He swears it's about to happen", "Not quite yet", "Any second yet", "Nope", "Not really, but really", "Almost"]
                 var min = 0, sec = 0
                 if (urlParams.has('m')){
-                    min = urlParams.get('m') ;
+                    min =parseInt(urlParams.get('m'));
                 }
                 if (urlParams.has('s')){
-                    sec = urlParams.get('s');
+                    sec = parseInt(urlParams.get('s'));
                 }
 
                 var time = min * 60 + sec;
@@ -132,7 +134,11 @@
         </script>
     </head>
     <body>
-        <h1><span id = "status">No</span></h1>
-        <div id = "timer"></div>
+        <div class="splash-container">
+            <div class="splash">
+                <h1 class="splash-head"><span id = "status">No</span></h1>
+                <p class="splash-subhead"><div id = "timer"></div></p>
+            </div>    
+        </div>
     </body>
 </html>
