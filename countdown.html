@@ -1,0 +1,139 @@
+<html>
+    <head>
+        <title>Is Stefan Ready for Fun?</title>
+
+        <script>
+            function CountDownTimer(duration, granularity) {
+            this.duration = duration;
+            this.granularity = granularity || 1000;
+            this.tickFtns = [];
+            this.running = false;
+            this.onEndFtn = [];
+            }
+
+            CountDownTimer.prototype.start = function() {
+            if (this.running) {
+                return;
+            }
+            this.running = true;
+            var start = Date.now(),
+                that = this,
+                diff, obj;
+
+            (function timer() {
+                diff = that.duration - (((Date.now() - start) / 1000) | 0);
+
+                if (diff > 0) {
+                setTimeout(timer, that.granularity);
+                } else {
+                diff = 0;
+                that.running = false;
+                that.onEndFtn.forEach(function(ftn){
+                    ftn.call(this, that.duration)
+                }, that);
+                }
+
+                obj = CountDownTimer.parse(diff);
+                that.tickFtns.forEach(function(ftn) {
+                ftn.call(this, obj.minutes, obj.seconds);
+                }, that);
+            }());
+            };
+
+            CountDownTimer.prototype.onTick = function(ftn) {
+            if (typeof ftn === 'function') {
+                this.tickFtns.push(ftn);
+            }
+            return this;
+            };
+
+            CountDownTimer.prototype.onEnd = function(ftn) {
+            if (typeof ftn === 'function') {
+                this.onEndFtn.push(ftn);
+            }
+            return this;
+            };
+
+            CountDownTimer.prototype.expired = function() {
+            return !this.running;
+            };
+
+            CountDownTimer.prototype.startObj = function() {
+                return CountDownTimer.parse(this.duration);
+            };
+
+            CountDownTimer.parse = function(seconds) {
+            return {
+                'minutes': (seconds / 60) | 0,
+                'seconds': (seconds % 60) | 0
+            };
+        };
+
+        
+
+            window.onload = function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                const excuses = ["Still no", "Maybe", "Brazil isn't done", "The email is about to come out!", "Not quite yet", "Almost", "Any second yet", "Nope", "Not really, but really"]
+                var min = 0, sec = 0
+                if (urlParams.has('m')){
+                    min = urlParams.get('m') ;
+                }
+                if (urlParams.has('s')){
+                    sec = urlParams.get('s');
+                }
+
+                var time = min * 60 + sec;
+
+                if (time == 0) time = 300; 
+
+                const display = document.querySelector('#timer');
+
+                const timer = new CountDownTimer(time);
+
+                const startObj = timer.startObj();
+
+                function format(minutes, seconds) {
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                display.textContent = minutes + ':' + seconds;
+                }
+                
+                format(startObj.minutes, startObj.seconds)
+                
+                var excuseCount = 0;
+
+                function actuallyDone(duration){
+                        document.querySelector('#status').textContent='Yes';
+                        display.textContent = "";
+                    };
+
+                function final(duration){
+                    document.querySelector('#status').textContent=excuses[excuseCount++ % excuses.length];
+                    const secondTimer = new CountDownTimer(duration);
+                    secondTimer.onTick(format);
+                    if (Math.random() > .5){
+                    secondTimer.onEnd(final);
+                    } else {
+                        secondTimer.onEnd(actuallyDone);
+                    }
+                    
+                    secondTimer.start();
+                };
+
+                
+                
+
+                timer.onTick(format);
+                timer.onEnd(final);
+
+                timer.start();
+            };
+
+
+        </script>
+    </head>
+    <body>
+        <h1><span id = "status">No</span></h1>
+        <div id = "timer"></div>
+    </body>
+</html>
