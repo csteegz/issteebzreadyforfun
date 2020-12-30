@@ -73,7 +73,7 @@
 
             window.onload = function () {
                 const urlParams = new URLSearchParams(window.location.search);
-                const excuses = ["Still no", "Maybe", "Brazil isn't done", "The email is about to come out!", "Not quite yet", "Almost", "Any second yet", "Nope", "Not really, but really"]
+                const excuses = ["Still no", "Possibly (but not actually)", "Maybe", "Brazil isn't done", "Not this time","The email is about to come out!", "He swears it's about to happen", "Not quite yet", "Any second yet", "Nope", "Not really, but really", "Almost"]
                 var min = 0, sec = 0
                 if (urlParams.has('m')){
                     min = urlParams.get('m') ;
@@ -100,19 +100,18 @@
                 
                 format(startObj.minutes, startObj.seconds)
                 
-                var excuseCount = 0;
-
                 function actuallyDone(duration){
                         document.querySelector('#status').textContent='Yes';
                         display.textContent = "";
                     };
 
                 function final(duration){
-                    document.querySelector('#status').textContent=excuses[excuseCount++ % excuses.length];
                     const secondTimer = new CountDownTimer(duration);
                     secondTimer.onTick(format);
-                    if (Math.random() > .5){
-                    secondTimer.onEnd(final);
+                    var isDone = Math.random();
+                    document.querySelector('#status').textContent=excuses[Math.round(isDone * excuses.length)];
+                    if ( isDone < .85){
+                        secondTimer.onEnd(final);
                     } else {
                         secondTimer.onEnd(actuallyDone);
                     }
